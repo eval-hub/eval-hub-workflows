@@ -2,6 +2,30 @@
 
 Reusable GitHub Actions workflows shared across repositories.
 
+## Development checks
+
+Install [pre-commit](https://pre-commit.com/#install), Python 3.9 or newer, Go
+(for actionlint), Bash, and `jq`. Enable the hooks and check the repository:
+
+```sh
+pre-commit install
+pre-commit run --all-files
+```
+
+Pre-commit installs actionlint and the Python test dependencies into isolated
+environments on its first run. The hooks lint GitHub Actions workflows and run
+[`scripts/test_sync_fork.py`](scripts/test_sync_fork.py), which exercises the
+workflow's Bash step with a mocked `gh` command. Checks cover successful syncs,
+already synchronized forks, API errors, invalid inputs, and literal handling of
+branch names. Tests do not call GitHub or update a fork.
+
+`pre-commit install` also enables the `commit-msg` hook, which rejects commit
+messages without a Conventional Commit subject or a DCO `Signed-off-by` trailer.
+
+Use Conventional Commits and include a DCO sign-off on every pushed commit with
+`git commit -s`, for example `git commit -s -m "ci: update fork sync workflow"`.
+See [AGENTS.md](AGENTS.md) for repository guidance.
+
 ## Synchronize a downstream fork
 
 [`sync-fork.yml`](.github/workflows/sync-fork.yml) updates a GitHub fork from its
