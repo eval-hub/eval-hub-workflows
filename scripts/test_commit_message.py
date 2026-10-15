@@ -4,13 +4,16 @@ import unittest
 
 from check_commit_message import validate
 
-
 SIGN_OFF = "Signed-off-by: Example Contributor <contributor@example.com>"
 
 
 class CommitMessageTests(unittest.TestCase):
     def test_conventional_commits_with_signoff(self):
-        for subject in ("ci: add workflow", "fix(sync): handle conflicts", "feat!: change input"):
+        for subject in (
+            "ci: add workflow",
+            "fix(sync): handle conflicts",
+            "feat!: change input",
+        ):
             with self.subTest(subject=subject):
                 self.assertEqual(validate(f"{subject}\n\n{SIGN_OFF}\n"), [])
 
@@ -20,7 +23,11 @@ class CommitMessageTests(unittest.TestCase):
                 self.assertTrue(validate(f"{subject}\n\n{SIGN_OFF}\n"))
 
     def test_missing_or_invalid_signoff(self):
-        for body in ("", "Signed-off-by: Contributor", "Signed-off-by: Name <no-email>"):
+        for body in (
+            "",
+            "Signed-off-by: Contributor",
+            "Signed-off-by: Name <no-email>",
+        ):
             with self.subTest(body=body):
                 self.assertTrue(validate(f"ci: update workflow\n\n{body}\n"))
 

@@ -2,14 +2,13 @@
 
 import json
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 
 import yaml
-
 
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/sync-fork.yml"
@@ -20,7 +19,9 @@ class ForkSyncTests(unittest.TestCase):
     def setUpClass(cls):
         for executable in ("bash", "jq"):
             if not shutil.which(executable):
-                raise RuntimeError(f"Install {executable} before running workflow tests")
+                raise RuntimeError(
+                    f"Install {executable} before running workflow tests"
+                )
         workflow = yaml.safe_load(WORKFLOW.read_text())
         steps = workflow["jobs"]["sync"]["steps"]
         cls.script = next(
@@ -78,16 +79,26 @@ class ForkSyncTests(unittest.TestCase):
         self.assertEqual(
             json.loads(self.arguments.read_text()),
             [
-                "api", "--method", "POST", f"repos/{repository}/merge-upstream",
-                "-H", "Accept: application/vnd.github+json",
-                "-H", "X-GitHub-Api-Version: 2022-11-28",
-                "-f", f"branch={branch}",
+                "api",
+                "--method",
+                "POST",
+                f"repos/{repository}/merge-upstream",
+                "-H",
+                "Accept: application/vnd.github+json",
+                "-H",
+                "X-GitHub-Api-Version: 2022-11-28",
+                "-f",
+                f"branch={branch}",
             ],
         )
 
     def test_bash_syntax(self):
         result = subprocess.run(
-            ["bash", "-n"], input=self.script, text=True, capture_output=True, timeout=10
+            ["bash", "-n"],
+            input=self.script,
+            text=True,
+            capture_output=True,
+            timeout=10,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
 
@@ -134,7 +145,9 @@ class ForkSyncTests(unittest.TestCase):
                 self.assertFalse(self.summary.exists())
 
     def test_custom_destination_and_branch(self):
-        result = self.run_sync(TARGET_REPOSITORY="another/fork", TARGET_BRANCH="release/v1")
+        result = self.run_sync(
+            TARGET_REPOSITORY="another/fork", TARGET_BRANCH="release/v1"
+        )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assert_api_request(repository="another/fork", branch="release/v1")
 

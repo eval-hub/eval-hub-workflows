@@ -1,11 +1,10 @@
 """Require a Conventional Commit subject and a DCO Signed-off-by trailer."""
 
 import argparse
-from pathlib import Path
 import re
 import subprocess
 import sys
-
+from pathlib import Path
 
 SUBJECT = re.compile(r"[a-z][a-z0-9-]*(?:\([^()\r\n]+\))?!?: \S.*")
 SIGN_OFF = re.compile(r"Signed-off-by: [^<>\r\n]+ <[^<>\s@]+@[^<>\s@]+>", re.IGNORECASE)

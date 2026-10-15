@@ -23,5 +23,7 @@ These instructions apply to the entire repository.
 - Pass workflow inputs to shell steps through environment variables and quote
   expansions. Do not interpolate untrusted inputs directly into shell scripts.
 - Pin third-party GitHub Actions to full commit SHAs.
+- Pin Docker actions to `sha256` digests; local `./` action references are allowed.
+- Keep local pre-commit checks and `.github/workflows/checks.yml` aligned.
 - Keep tests offline: mock `gh` and never synchronize a real fork during tests.
 - Update the fork-sync tests when changing its behavior or interface.

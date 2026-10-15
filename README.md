@@ -4,16 +4,28 @@ Reusable GitHub Actions workflows shared across repositories.
 
 ## Development checks
 
-Install [pre-commit](https://pre-commit.com/#install), Python 3.9 or newer, Go
-(for actionlint), Bash, and `jq`. Enable the hooks and check the repository:
+Install [pre-commit](https://pre-commit.com/#install), Python 3.10 or newer,
+Bash, and `jq`. Enable the hooks and check the repository:
 
 ```sh
 pre-commit install
 pre-commit run --all-files
 ```
 
-Pre-commit installs actionlint and the Python test dependencies into isolated
-environments on its first run. The hooks lint GitHub Actions workflows and run
+Pre-commit installs its pinned tools and test dependencies into isolated
+environments on its first run, including actionlint and ShellCheck via their
+Python distribution packages. No separate Go or ShellCheck installation is needed.
+The hooks check:
+
+- YAML syntax, merge-conflict markers, trailing whitespace, final newlines, and
+  files larger than 500 KiB.
+- Python linting, import ordering, and formatting with Ruff.
+- GitHub Actions syntax and embedded shell scripts with actionlint and ShellCheck.
+- Full commit SHA references for remote actions and reusable workflows, or
+  `sha256` digests for Docker actions. Local `./` references are allowed.
+- Offline workflow and repository-policy tests.
+
+The tests include
 [`scripts/test_sync_fork.py`](scripts/test_sync_fork.py), which exercises the
 workflow's Bash step with a mocked `gh` command. Checks cover successful syncs,
 already synchronized forks, API errors, invalid inputs, and literal handling of
@@ -21,6 +33,11 @@ branch names. Tests do not call GitHub or update a fork.
 
 `pre-commit install` also enables the `commit-msg` hook, which rejects commit
 messages without a Conventional Commit subject or a DCO `Signed-off-by` trailer.
+
+[`checks.yml`](.github/workflows/checks.yml) runs these checks on pull requests
+and pushes to `main`. It also validates every commit message in a pull request.
+CI installs Python automatically; no GitHub token or fork-sync credential is
+needed by the tests.
 
 Use Conventional Commits and include a DCO sign-off on every pushed commit with
 `git commit -s`, for example `git commit -s -m "ci: update fork sync workflow"`.
